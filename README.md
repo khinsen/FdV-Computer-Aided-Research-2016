@@ -11,3 +11,4 @@ For communication during the course, please use the
 
 For viewing the slides, click on the links below:
  - [Course overview](http://rawgithub.com/khinsen/FdV-Computer-Aided-Research-2016/master/overview.html)
+ - [The lab notebook of the digital age](http://rawgithub.com/khinsen/FdV-Computer-Aided-Research-2016/master/the_lab_notebook_of_the_digital_age.html)
