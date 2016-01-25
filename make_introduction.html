@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Title</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style type="text/css", media="screen">
+      @import url(http://fonts.googleapis.com/css?family=Droid+Serif);
+      @import url(http://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: 400;
+        margin-bottom: 0;
+        margin-top: 10px;
+      }
+      h1 { font-size: 3.5em; }
+      h2 { font-size: 3em; }
+      h3 { font-size: 1.6em; }
+      .inverse {
+        background: #272822;
+        color: #777872;
+        text-shadow: 0 0 20px #333;
+      }
+      .inverse h1, .inverse h2 {
+        color: #f3f3f3;
+        line-height: 0.8em;
+      }
+
+      pre {
+        border-left: 0.4em solid #d7d7d7;
+        padding: 1em !important;
+      }
+      code {
+        background: transparent !important;
+      }
+      .right {
+        float: right;
+        margin-left: 1em;
+      }
+      .pushdown {
+        margin-top: 12em;
+      }
+      .footnote {
+        position: absolute;
+        bottom: 3em;
+       }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle, inverse
+
+# Automation and Make
+
+### [Software Carpentry](http://software-carpentry.org/)
+
+adapted from <br/>
+http://swcarpentry.github.io/make-novice/ <br/>
+by [Konrad Hinsen](http://khinsen.net/)
+
+<br/>
+<br/>
+![Creative Commons License](https://i.creativecommons.org/l/by/3.0/88x31.png)  <br/>
+This work is licensed under a <br/>
+[Creative Commons Attribution License](https://github.com/swcarpentry/bc/blob/gh-pages/LICENSE.md).
+
+---
+
+# Introduction
+
+Suppose we have a script, `wordcount.py`, that reads in a text file,
+counts the words in this text file, and outputs a data file:
+
+~~~ {.bash}
+$ python wordcount.py books/isles.txt isles.dat
+~~~
+
+If we view the first 5 rows of the data file using `head`,
+
+~~~ {.bash}
+$ head -5 isles.dat
+~~~
+
+we can see that the file consists of one row per word. 
+
+~~~ {.output}
+the 3822 6.7371760973
+of 2460 4.33632998414
+and 1723 3.03719372466
+to 1479 2.60708619778
+a 1308 2.30565838181
+~~~
+
+---
+
+Each row shows the word itself, the number of occurrences of that
+word, and the number of occurrences as a percentage of the total
+number of words in the text file. As another example:
+
+~~~ {.bash}
+$ python wordcount.py books/abyss.txt abyss.dat
+$ head -5 abyss.dat
+~~~
+
+~~~ {.output}
+the 4044 6.35449402891
+and 2807 4.41074795726
+of 1907 2.99654305468
+a 1594 2.50471401634
+to 1515 2.38057825267
+~~~
+
+Suppose we also have a script, `plotcount.py`, that reads in a data
+file and plots the 10 most frequently occurring words:
+
+~~~ {.bash}
+$ python plotcount.py isles.dat show
+~~~
+
+Close the window to exit the plot.
+
+---
+
+`plotcount.py` can also save the plot as an image (e.g. a PNG file):
+
+~~~ {.bash}
+$ python plotcount.py isles.dat isles.png
+~~~
+
+It is possible that `plotcount.py` does not work on your computer
+because it does not have a sufficiently complete Python installation.
+In that case, use `plotcount_text.py` instead. It produces a crude
+approximation to a histogram by printing asterisks.
+
+Together these scripts implement a common workflow:
+
+1. Read a data file.
+2. Perform an analysis on this data file.
+3. Write the analysis results to a new file.
+4. Plot a graph of the analysis results.
+5. Save the graph as an image, so we can put it in a paper.
+
+---
+
+Running `wordcount.py` and `plotcount.py` at the shell prompt, as we
+have been doing, is fine for one or two files. If, however, we had 5
+or 10 or 20 text files, this would quickly become monotonous. We could
+write a shell script to loop over our text files and create data files
+and images for each in turn, but this too can cause problems. If a
+text file changes then we need to re-run our analysis and recreate our
+graph, but only for the text file that changed, not all of
+them. Furthermore, we only want do this if and only if the text file
+has changed.
+
+Make was developed by 
+Stuart Feldman in 1977 as a Bell Labs summer intern, and remains in
+widespread use today. Make can execute the commands needed to run our
+analysis and plot our results. Like shell scripts it allows us to
+execute complex sequences of commands via a single shell
+command. Unlike shell scripts it explicitly records the dependencies
+between files and so can determine when to recreate our data files or
+image files, if our text files change. Make can be used for any
+commands that follow the general pattern of processing files to create
+new files, for example: 
+
+* Run analysis scripts on raw data files to get data files that
+  summarise the raw data. 
+* Run visualisation scripts on data files to produce plots.
+* Parse and combine text files and plots to create papers.
+* Compile source code into executable programs or libraries.
+
+---
+
+There are now many build tools available, for example [Apache
+ANT](http://ant.apache.org/), [doit](http://pydoit.org/), and
+[nmake](https://msdn.microsoft.com/en-us/library/dd9y37ha.aspx) for
+Windows. There are also build tools that build scripts for use with
+these build tools and others e.g. [GNU
+Autoconf](http://www.gnu.org/software/autoconf/autoconf.html) and
+[CMake](http://www.cmake.org/). Which is best for you depends on your
+requirements, intended usage, and operating system. However, they
+all share the same fundamental concepts as Make.
+
+[GNU Make](http://www.gnu.org/software/make/) is a free, fast, 
+well-documented, very popular and highly extended one of some 
+Make implements. From now on, we will focus on it, then when 
+we say Make, we mean GNU Make.
+
+---
+
+# Makefiles
+
+Create a file, called `Makefile`, with the following content:
+
+~~~ {.make}
+# Count words.
+isles.dat : books/isles.txt
+        python wordcount.py books/isles.txt isles.dat
+~~~
+
+This is a simple [build file](https://swcarpentry.github.io/make-novice/reference.html#build-file), which for
+Make is called a [Makefile](https://swcarpentry.github.io/make-novice/reference.html#makefile) - a file executed
+by Make. Let us go through each line in turn:
+
+* `#` denotes a *comment*. Any text from `#` to the end of the line is
+  ignored by Make.
+* `isles.dat` is a [target](https://swcarpentry.github.io/make-novice/reference.html#target), a file to be
+  created, or built.
+* `books/isles.txt` is a [dependency](https://swcarpentry.github.io/make-novice/reference.html#dependency), a
+  file that is needed to build or update the target. Targets can have
+  zero or more dependencies.
+* `:` separates targets from dependencies.
+* `python wordcount.py books/isles.txt isles.dat` is an
+  [action](https://swcarpentry.github.io/make-novice/reference.html#action), a command to run to build or update
+  the target using the dependencies. Targets can have zero or more
+  actions.
+* Actions are indented using the TAB character, *not* 8 spaces. This
+  is a legacy of Make's 1970's origins.
+* Together, the target, dependencies, and actions form a
+  [rule](https://swcarpentry.github.io/make-novice/reference.html#rule). 
+
+---
+
+Our rule above describes how to build the target `isles.dat` using the
+action `python wordcount.py` and the dependency `books/isles.txt`.
+
+Let's first sure we start from scratch and delete the `.dat` and `.png`
+files we created:
+
+~~~ {.bash}
+$ rm *.dat *.png
+~~~
+
+By default, Make looks for a Makefile, called `Makefile`, and we can
+run Make as follows:
+
+~~~ {.bash}
+$ make
+~~~
+
+Make prints out the actions it executes:
+
+~~~ {.output}
+python wordcount.py books/isles.txt isles.dat
+~~~
+
+---
+
+If we see,
+
+~~~ {.error}
+Makefile:3: *** missing separator.  Stop.
+~~~
+
+then we have used a space instead of a TAB characters to indent one of
+our actions.
+
+We don't have to call our Makefile `Makefile`. However, if we call it
+something else we need to tell Make where to find it. This we can do
+using `-f` flag. For example:
+
+~~~ {.bash}
+$ make -f Makefile
+~~~
+
+As we have re-run our Makefile, Make now informs us that:
+
+~~~ {.output}
+make: `isles.dat' is up to date.
+~~~
+
+---
+
+This is because our target, `isles.dat`, has now been created, and
+Make will not create it again. To see how this works, let's pretend to
+update one of the text files. Rather than opening the file in an
+editor, we can use the shell `touch` command to update its timestamp
+(which would happen if we did edit the file):
+
+~~~ {.bash}
+$ touch books/isles.txt
+~~~
+
+If we compare the timestamps of `books/isles.txt` and `isles.dat`,
+
+~~~ {.bash}
+$ ls -l books/isles.txt isles.dat
+~~~
+
+then we see that `isles.dat`, the target, is now older
+than `books/isles.txt`, its dependency:
+
+~~~ {.output}
+-rw-r--r--    1 mjj      Administ   323972 Jun 12 10:35 books/isles.txt
+-rw-r--r--    1 mjj      Administ   182273 Jun 12 09:58 isles.dat
+~~~
+
+---
+
+If we run Make again,
+
+~~~ {.bash}
+$ make
+~~~
+
+then it recreates `isles.dat`:
+
+~~~ {.output}
+python wordcount.py books/isles.txt isles.dat
+~~~
+
+When it is asked to build a target, Make checks the 'last modification
+time' of both the target and its dependencies. If any dependency has
+been updated since the target, then the actions are re-run to update
+the target.
+
+Let's add another rule to the end of `Makefile`:
+
+~~~ {.make}
+abyss.dat : books/abyss.txt
+        python wordcount.py books/abyss.txt abyss.dat
+~~~
+
+---
+
+If we run Make,
+
+~~~ {.bash}
+$ make
+~~~
+
+then we get:
+
+~~~ {.output}
+make: `isles.dat' is up to date.
+~~~
+
+Nothing happens because Make attempts to build the first target it
+finds in the Makefile, the [default
+target](https://swcarpentry.github.io/make-novice/reference.html#default-target), which is `isles.dat` which is
+already up-to-date. We need to explicitly tell Make we want to build
+`abyss.dat`: 
+
+~~~ {.bash}
+$ make abyss.dat
+~~~
+
+Now, we get:
+
+~~~ {.output}
+python wordcount.py books/abyss.txt abyss.dat
+~~~
+
+---
+
+We may want to remove all our data files so we can explicitly recreate
+them all. We can introduce a new target, and associated rule, `clean`:
+
+~~~ {.make}
+clean : 
+        rm -f *.dat
+~~~
+
+This is an example of a rule that has no dependencies. `clean` has no
+dependencies on any `.dat` file as it makes no sense to create these
+just to remove them. We just want to remove the data files whether or
+not they exist. If we run Make and specify this target,
+
+~~~ {.bash}
+$ make clean
+~~~
+
+then we get:
+
+~~~ {.output}
+rm -f *.dat
+~~~
+
+---
+
+There is no actual thing built called `clean`. Rather, it is a
+short-hand that we can use to execute a useful sequence of
+actions. Such targets, though very useful, can lead to problems. For
+example, let us recreate our data files, create a directory called
+`clean`, then run Make:
+
+~~~ {.bash}
+$ make isles.dat abyss.dat
+$ mkdir clean
+$ make clean
+~~~
+
+We get:
+
+~~~ {.outputs}
+make: `clean' is up to date.
+~~~
+
+Make finds a file (or directory) called `clean` and, as its `clean`
+rule has no dependencies, assumes that `clean` has been built and is
+up-to-date and so does not execute the rule's actions.
+
+---
+
+As we are using `clean` as a short-hand, we need to tell Make to
+always execute this rule if we run `make clean`, by telling Make that
+this is a [phony target](#https://swcarpentry.github.io/make-novice/reference.html#phony-target), that it does
+not build anything. This we do by marking the target as `.PHONY`:
+
+~~~ {.make}
+.PHONY : clean
+clean : 
+        rm -f *.dat
+~~~
+
+If we run Make,
+
+~~~ {.bash}
+$ make clean
+~~~
+
+then we get:
+
+~~~ {.outputs}
+rm -f *.dat
+~~~
+
+---
+
+We can add a similar command to create all the data files. We can put
+this at the top of our Makefile so that it is the [default
+target](https://swcarpentry.github.io/make-novice/reference.html#default-target), which is executed by default 
+if no target is given to the `make` command:
+
+~~~ {.make}
+.PHONY : dats
+dats : isles.dat abyss.dat
+~~~
+
+This is an example of a rule that has dependencies that are targets of
+other rules. When Make runs, it will check to see if the dependencies
+exist and, if not, will see if rules are available that will create
+these. If such rules exist it will invoke these first, otherwise
+Make will raise an error.
+
+This rule is also an example of a rule that has no actions. It is used
+purely to trigger the build of its dependencies, if needed.
+
+---
+
+If we run,
+
+~~~ {.bash}
+$ make dats
+~~~
+
+then Make creates the data files:
+
+~~~ {.output}
+python wordcount.py books/isles.txt isles.dat
+python wordcount.py books/abyss.txt abyss.dat
+~~~
+
+If we run `dats` again,
+
+~~~ {.bash}
+$ make dats
+~~~
+
+then Make sees that the data files exist:
+
+~~~ {.output}
+make: Nothing to be done for `dats'.
+~~~
+
+---
+
+Our Makefile now looks like this:
+
+~~~ {.make}
+# Count words.
+.PHONY : dats
+dats : isles.dat abyss.dat
+
+isles.dat : books/isles.txt
+        python wordcount.py books/isles.txt isles.dat
+
+abyss.dat : books/abyss.txt
+        python wordcount.py books/abyss.txt abyss.dat
+
+.PHONY : clean
+clean :
+        rm -f *.dat
+~~~
+
+---
+
+The following figure shows the dependencies embodied within our Makefile, involved in building the `dats` target:
+
+![Dependencies represented within the Makefile](images/02-makefile.png "Dependencies represented within the Makefile")
+
+---
+
+## Exercice: write two new rules
+
+Write a new rule for `last.dat`, created from `books/last.txt`.
+
+Update the `dats` rule with this target.
+
+Write a new rule for `analysis.tar.gz`, which creates an archive of
+the data files. The rule needs to: 
+
+* Depend upon each of the three `.dat` files.
+* Invoke the action `tar -czf analysis.tar.gz isles.dat abyss.dat
+  last.dat` 
+
+Put this rule at the top of the Makefile so that it is the default target.
+
+Update `clean` so that it removes `analysis.tar.gz`.
+
+---
+
+The following figure shows the dependencies embodied within our Makefile, involved in building the `analysis.tar.gz` target:
+
+![analysis.tar.gz dependencies represented within the Makefile](images/02-makefile-challenge.png "analysis.tar.gz dependencies represented within the Makefile")
+
+---
+
+# Variables
+
+After the exercise at the end of the previous part, our Makefile look like this:
+
+~~~ {.make}
+# Generate archive file.
+analysis.tar.gz : isles.dat abyss.dat last.dat
+        tar -czf analysis.tar.gz isles.dat abyss.dat last.dat
+
+# Count words.
+.PHONY : dats
+dats : isles.dat abyss.dat last.dat
+
+isles.dat : books/isles.txt
+        python wordcount.py books/isles.txt isles.dat
+
+abyss.dat : books/abyss.txt
+        python wordcount.py books/abyss.txt abyss.dat
+
+last.dat : books/last.txt
+        python wordcount.py books/last.txt last.dat
+
+.PHONY : clean
+clean :
+        rm -f *.dat
+        rm -f analysis.tar.gz
+~~~
+
+---
+
+Our Makefile has a lot of duplication. For example, the names of text
+files and data files are repeated in many places throughout the
+Makefile. Makefiles are a form of code and, in any code, repeated code
+can lead to problems e.g. we rename a data file in one part of the
+Makefile but forget the rename it elsewhere. Let us set about removing
+some of this repetition.
+
+In our `analysis.tar.gz` rule we duplicate the data file names and the
+archive name:
+
+~~~ {.make}
+analysis.tar.gz : isles.dat abyss.dat last.dat
+        tar -czf analysis.tar.gz isles.dat abyss.dat last.dat
+~~~
+
+Looking at the archive name first, we can replace it in the action
+with `$@`:
+
+~~~ {.make}
+analysis.tar.gz : isles.dat abyss.dat last.dat
+        tar -czf $@ isles.dat abyss.dat last.dat
+~~~
+
+`$@` is a Make [automatic variable](https://swcarpentry.github.io/make-novice/reference.html#automatic-variable)
+which means 'the target of the current rule'. When Make is run it will
+replace this variable with the target name.
+
+---
+
+We can replace the dependencies in the action with `$^`:
+
+~~~ {.make}
+analysis.tar.gz : isles.dat abyss.dat last.dat
+        tar -czf $@ $^
+~~~
+
+`$^` is another automatic variable which means 'all the dependencies
+of the current rule'. Again, when Make is run it will replace this
+variable with the dependencies.
+ 
+Let's update our text files and re-run our rule:
+
+~~~ {.bash}
+$ touch books/*.txt
+$ make analysis.tar.gz
+~~~
+
+We get:
+
+~~~ {.output}
+python wordcount.py books/isles.txt isles.dat
+python wordcount.py books/abyss.txt abyss.dat
+python wordcount.py books/last.txt last.dat
+tar -czf analysis.tar.gz isles.dat abyss.dat last.dat
+~~~
+
+---
+
+We can use the bash wild-card in our dependency list:
+
+~~~ {.make}
+analysis.tar.gz : *.dat
+        tar -czf $@ $^
+~~~
+
+Let's update our text files and re-run our rule:
+
+~~~ {.bash}
+$ touch books/*.txt
+$ make analysis.tar.gz
+~~~
+
+We get the same as above.
+
+Now let's delete the data files and re-run our rule:
+
+~~~ {.bash}
+$ make clean
+$ make analysis.tar.gz
+~~~
+
+---
+
+We get:
+
+~~~ {.error}
+make: *** No rule to make target `*.dat', needed by `analysis.tar.gz'.  Stop.
+~~~
+
+As there are no files that match the pattern `*.dat` the name `*.dat`
+is used as a file name itself, and there is no file matching that, nor
+any rule so we get an error. We need to explicitly rebuild the `.dat`
+files first:
+
+~~~ {.bash}
+$ make dats
+$ make analysis.tar.gz
+~~~
+
+---
+
+## Exercice: updating dependencies
+
+What will happen if you now execute:
+
+~~~ {.bash}
+$ touch *.dat
+$ make analysis.tar.gz
+~~~
+
+1. nothing
+2. all files recreated
+3. only .dat files recreated
+4. only analysis.tar.gz recreated
+
+Please try to find the correct answer before actually running the
+commands to see what happens!
+
+---
+
+As we saw, `$^` means 'all the dependencies of the current
+rule'. This works well for `analysis.tar.gz` as its action 
+treats all the dependencies the same - as the contents of the
+archive.
+
+However, for some rules, we may want to treat the first dependency
+differently. For example, our rules for `.dat` use their first (and
+only) dependency specifically as the input file to `wordcount.py`. If
+we add additional dependencies (as we will soon do) then we don't want
+these being passed as input files to `wordcount.py` as it expects only
+one input file to be named when it is invoked.
+
+Make provides an automatic variable for this, `$<` which means 'the
+first dependency of the current rule'. 
+
+---
+
+## Exercice: rewrite `.dat` rules to use automatic variables
+
+Rewrite each `.dat` rule to use the automatic variables `$@` ('the
+target of the current rule') and `$<` ('the first dependency of the
+current rule').
+
+---
+
+# Dependencies
+
+Our Makefile now looks like this:
+
+~~~ {.make}
+# Generate archive file.
+analysis.tar.gz : *.dat
+	tar -czf $@ $^
+
+# Count words.
+.PHONY : dats
+dats : isles.dat abyss.dat last.dat
+
+isles.dat : books/isles.txt
+	python wordcount.py $< $@
+
+abyss.dat : books/abyss.txt
+	python wordcount.py $< $@
+
+last.dat : books/last.txt
+	python wordcount.py $< $@
+
+.PHONY : clean
+clean :
+        rm -f *.dat
+        rm -f analysis.tar.gz
+~~~
+
+---
+
+Our data files are a product not only of our text files but the
+script, `wordcount.py`, that processes the text files and creates the
+data files. We should add `wordcount.py` as a dependency of each of our
+data files also:
+
+~~~ {.make}
+isles.dat : books/isles.txt wordcount.py
+	python wordcount.py $< $@
+
+abyss.dat : books/abyss.txt wordcount.py
+	python wordcount.py $< $@
+
+last.dat : books/last.txt wordcount.py
+	python wordcount.py $< $@
+~~~
+
+If we pretend to edit `wordcount.py` and re-run Make,
+
+~~~ {.bash}
+$ touch wordcount.py
+$ make dats
+~~~
+
+then we get:
+
+~~~ {.output}
+python wordcount.py books/isles.txt isles.dat
+python wordcount.py books/abyss.txt abyss.dat
+python wordcount.py books/last.txt last.dat
+~~~
+
+---
+
+The following figure shows the dependencies embodied within our Makefile, involved in building the `analysis.tar.gz` target, after adding `wordcount.py` as a dependency to the `.dat` files:
+
+![analysis.tar.gz dependencies after adding wordcount.py as a dependency](images/04-dependencies.png "analysis.tar.gz dependencies after adding wordcount.py as a dependency")
+
+---
+
+Let's add our analysis script to the archive too:
+
+~~~ {.make}
+analysis.tar.gz : *.dat wordcount.py
+        tar -czf $@ $^
+~~~
+
+If we re-run Make,
+
+~~~ {.bash}
+$ make analysis.tar.gz
+~~~
+
+then we get:
+
+~~~ {.output}
+tar -czf analysis.tar.gz abyss.dat isles.dat last.dat wordcount.py
+~~~
+
+---
+
+# Patterns
+
+Our Makefile still has repeated content. The rules for each `.dat`
+file are identical apart from the text and data file names. We can
+replace these rules with a single [pattern
+rule](https://swcarpentry.github.io/make-novice/reference.html#pattern-rule) which can be used to build any
+`.dat` file from a `.txt` file in `books/`:
+
+~~~ {.make}
+%.dat : books/%.txt wordcount.py
+        python wordcount.py $< $*.dat
+~~~
+
+`%` is a Make [wild-card](https://swcarpentry.github.io/make-novice/reference.html#wild-card). `$*` is a special variable which gets replaced by the [stem](https://swcarpentry.github.io/make-novice/reference.html#stem) with which the rule matched.
+
+If we re-run Make,
+
+~~~ {.bash}
+$ make clean
+$ make dats
+~~~
+
+---
+
+then we get:
+
+~~~ {.output}
+python wordcount.py books/isles.txt isles.dat
+python wordcount.py books/abyss.txt abyss.dat
+python wordcount.py books/last.txt last.dat
+~~~
+
+Our Makefile is now much shorter and cleaner:
+
+~~~ {.make}
+# Generate archive file.
+analysis.tar.gz : *.dat wordcount.py
+	tar -czf $@ $^
+
+# Count words.
+.PHONY : dats
+dats : isles.dat abyss.dat last.dat
+
+%.dat : books/%.txt wordcount.py
+	python wordcount.py $< $*.dat
+
+.PHONY : clean
+clean :
+        rm -f *.dat
+        rm -f analysis.tar.gz
+~~~
+
+---
+
+# Variables
+
+Despite our efforts, our Makefile still has repeated content, namely
+the name of our script, `wordcount.py`. If we renamed our script we'd
+have to update our Makefile in multiple places.
+
+We can introduce a Make [variable](https://swcarpentry.github.io/make-novice/reference.html#variable) (called a
+[macro](https://swcarpentry.github.io/make-novice/reference.html#macro) in some versions of Make) to hold our
+script name:
+
+~~~ {.make}
+COUNT_SRC=wordcount.py
+~~~
+
+This is a variable [assignment](https://swcarpentry.github.io/make-novice/reference.html#assignment) -
+`COUNT_SRC` is assigned the value `wordcount.py`.
+
+`wordcount.py` is our script and it is invoked by passing it to
+`python`. We can introduce another variable to represent this
+execution:
+
+~~~ {.make}
+COUNT_EXE=python $(COUNT_SRC)
+~~~
+
+---
+
+`$(...)` tells Make to replace a variable with its value when Make
+is run. This is a variable [reference](https://swcarpentry.github.io/make-novice/reference.html#reference). At 
+any place where we want to use the value of a variable we have to
+write it, or reference it, in this way.
+
+Here we reference the variable `COUNT_SRC`. This tells Make to 
+replace the variable `COUNT_SRC` with its value `wordcount.py`. When
+Make is run it will assign to `COUNT_EXE` the value `python
+wordcount.py`.
+
+Defining the variable `COUNT_EXE` in this way allows us to easily
+change how our script is run (if, for example, we changed the language
+used to implement our script from Python to R).
+
+---
+
+## Exercice: use variables
+
+Update `Makefile` so that the `%.dat` and `analysis.tar.gz` rules
+reference the variables `COUNT_SRC` and `COUNT_EXE`.
+
+---
+
+Placing variables at the top of a Makefile means they are easy to
+find and modify. Alternatively, we can pull them out into a new
+Makefile that just holds variable definitions. Let us create
+`config.mk`:
+
+~~~ {.make}
+# Count words script.
+COUNT_SRC=wordcount.py
+COUNT_EXE=python $(COUNT_SRC)
+~~~
+
+We can then import this Makefile into `Makefile` using:
+
+~~~ {.make}
+include config.mk
+~~~
+
+We can re-run Make to see that everything still works:
+
+~~~ {.bash}
+$ make clean
+$ make dats
+$ make analysis.tar.gz
+~~~
+
+---
+
+We have separated the configuration of our Makefile from its rules,
+the parts that do all the work. If we want to change our script name
+or how it is executed we just need to edit our configuration file, not
+our source code in `Makefile`. Decoupling code from configuration in
+this way is good programming practice, as it promotes more modular,
+flexible and reusable code.
+
+---
+
+# Functions
+
+At this point, we have the following Makefile:
+
+~~~ {.make}
+include config.mk
+
+# Generate archive file.
+analysis.tar.gz : *.dat $(COUNT_SRC)
+	tar -czf $@ $^
+
+# Count words.
+.PHONY : dats
+dats : isles.dat abyss.dat last.dat
+
+%.dat : books/%.txt $(COUNT_SRC)
+	$(COUNT_EXE) $< $*.dat
+
+.PHONY : clean
+clean :
+        rm -f *.dat
+        rm -f analysis.tar.gz
+~~~
+
+---
+
+Make has many [functions](https://swcarpentry.github.io/make-novice/reference.html#function) which can be used to
+write more complex rules. One example is `wildcard`. `wildcard` gets a
+list of files matching some pattern, which we can then save in a
+variable. So, for example, we can get a list of all our text files
+(files ending in `.txt`) and save these in a variable by adding this at
+the beginning of our makefile:
+
+~~~ {.make}
+TXT_FILES=$(wildcard books/*.txt)
+~~~
+
+We can add `.PHONY` target and rule to show the variable's value:
+
+~~~ {.make}
+.PHONY : variables
+variables:
+	@echo TXT_FILES: $(TXT_FILES)
+~~~
+
+> ## @echo
+>
+> Make prints actions as it executes them. Using `@` at the start of
+> an action tells Make not to print this action. So, by using `@echo`
+> instead of `echo`, we can see the result of `echo` (the variable's
+> value being printed) but not the `echo` command itself.
+
+---
+
+If we run Make:
+
+~~~ {.bash}
+$ make variables
+~~~
+
+We get:
+
+~~~ {.output}
+TXT_FILES: books/abyss.txt books/isles.txt books/last.txt books/sierra.txt
+~~~
+
+Note how `sierra.txt` is now included too.
+
+---
+
+The following figure shows the dependencies embodied within our Makefile, involved in building the `analysis.tar.gz` target, once we have introduced our function:
+
+![image](./images/07-functions.png)
+
+---
+
+`patsubst` ('pattern substitution') takes a pattern, a replacement string and a
+list of names in that order; each name in the list that matches the pattern is 
+replaced by the replacement string. Again, we can save the result in a
+variable. So, for example, we can rewrite our list of text files into
+a list of data files (files ending in `.dat`) and save these in a
+variable:
+
+~~~ {.make}
+DAT_FILES=$(patsubst books/%.txt, %.dat, $(TXT_FILES))
+~~~
+
+We can extend `variables` to show the value of `DAT_FILES` too:
+
+~~~ {.make}
+.PHONY : variables
+variables:
+	@echo TXT_FILES: $(TXT_FILES)
+	@echo DAT_FILES: $(DAT_FILES)
+~~~
+
+---
+
+If we run Make,
+
+~~~ {.bash}
+$ make variables
+~~~
+
+then we get:
+
+~~~ {.output}
+TXT_FILES: books/abyss.txt books/isles.txt books/last.txt books/sierra.txt
+DAT_FILES: abyss.dat isles.dat last.dat sierra.dat
+~~~
+
+Now, `sierra.txt` is processed too.
+
+---
+
+With these we can rewrite `clean` and `dats`:
+
+~~~ {.make}
+.PHONY : dats
+dats : $(DAT_FILES)
+
+.PHONY : clean
+clean :
+        rm -f $(DAT_FILES)
+        rm -f analysis.tar.gz
+~~~
+
+Let's check:
+
+~~~ {.bash}
+$ make clean
+$ make dats
+~~~
+
+We get:
+
+~~~ {.output}
+python wordcount.py books/abyss.txt abyss.dat
+python wordcount.py books/isles.txt isles.dat
+python wordcount.py books/last.txt last.dat
+python wordcount.py books/sierra.txt sierra.dat
+~~~
+
+---
+
+We can also rewrite `analysis.tar.gz` too:
+
+~~~ {.make}
+analysis.tar.gz : $(DAT_FILES) $(COUNT_SRC)
+	tar -czf $@ $^
+~~~
+
+If we re-run Make:
+
+~~~ {.bash}
+$ make clean
+$ make analysis.tar.gz
+~~~
+
+We get:
+
+~~~ {.output}
+$ make analysis.tar.gz
+python wordcount.py books/abyss.txt abyss.dat
+python wordcount.py books/isles.txt isles.dat
+python wordcount.py books/last.txt last.dat
+python wordcount.py books/sierra.txt sierra.dat
+tar -czf analysis.tar.gz abyss.dat isles.dat last.dat sierra.dat wordcount.py
+~~~
+
+---
+
+We see that the problem we had when using the bash wild-card, `*.dat`,
+which required us to run `make dats` before `make analysis.tar.gz` has
+now disappeared, since our functions allow us to create `.dat` file
+names from those `.txt` file names in `books/`.
+
+---
+
+Here is our final Makefile:
+
+~~~ {.make}
+include config.mk
+
+TXT_FILES=$(wildcard books/*.txt)
+DAT_FILES=$(patsubst books/%.txt, %.dat, $(TXT_FILES))
+
+# Generate archive file.
+analysis.tar.gz : $(DAT_FILES) $(COUNT_SRC)
+	tar -czf $@ $^
+
+# Count words.
+.PHONY : dats
+dats : $(DAT_FILES)
+
+%.dat : books/%.txt $(COUNT_SRC)
+	$(COUNT_EXE) $< $*.dat
+
+.PHONY : clean
+clean :
+	rm -f $(DAT_FILES)
+	rm -f analysis.tar.gz
+
+.PHONY: variables
+variables:
+	@echo TXT_FILES: $(TXT_FILES)
+	@echo DAT_FILES: $(DAT_FILES)
+~~~
+
+---
+
+Remember, the `config.mk` file contains:
+
+~~~ {.make}
+# Count words script.
+COUNT_SRC=wordcount.py
+COUNT_EXE=python $(COUNT_SRC)
+~~~
+
+---
+
+# Conclusion
+
+Automated build tools such as Make can help us in a number of
+ways. They help us to automate repetitive commands and, so, save us
+time and reduce the risk of us making errors we might make if running
+these commands manually.
+
+They can also save time by ensuring that automatically-generated
+artefacts (such as data files or plots) are only recreated when the
+files that were used to create these have changed in some way.
+
+Through their notion of targets, dependencies and actions they serve
+as a form of documentation, recording dependencies between code,
+scripts, tools, configurations, raw data, derived data, plots and
+papers.
+
+---
+
+## Exercice: extend the Makefile to create PNGs
+
+Add new rules, update existing rules, and add new macros to:
+
+* Create `.png` files from `.dat` files using `plotcount.py`.
+* Add the script and `.png` files to the archive.
+* Remove all auto-generated files (`.dat`, `.png`,
+  `analysis.tar.gz`). 
+
+---
+
+The following figure shows the dependencies involved in building the `analysis.tar.gz` target, once we've added support for images:
+
+![image](./images/08-conclusion-challenge.png)
+
+    </textarea>
+    <!-- load remark from GitHub -->
+    <script src="https://gnab.github.io/remark/downloads/remark-latest.min.js" type="text/javascript"></script>
+    <!-- fall back to local copy in case of a network problem -->
+    <script>window.remark || document.write('<script src="file:///Users/hinsen/js/remark/remark-latest.min.js" type="text/javascript">\x3C/script>')</script>
+    <!-- create slideshow -->
+    <script type="text/javascript">
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
