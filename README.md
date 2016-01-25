@@ -15,4 +15,4 @@ For viewing the slides, click on the links below:
  - [Version Control with Git](http://rawgithub.com/khinsen/FdV-Computer-Aided-Research-2016/master/git_introduction.html)
  - [Using Git in collaboration](http://rawgithub.com/khinsen/FdV-Computer-Aided-Research-2016/master/git_for_collaborating.html)
 
-- [Introduction to 'make'](http://rawgithub.com/khinsen/FdV-Computer-Aided-Research-2016/master/git_introduction.html) (download the [example files](http://rawgithub.com/khinsen/FdV-Computer-Aided-Research-2016/master/make_lesson.zip))
+- [Introduction to 'make'](http://rawgithub.com/khinsen/FdV-Computer-Aided-Research-2016/master/make_introduction.html) (download the [example files](https://github.com/khinsen/FdV-Computer-Aided-Research-2016/raw/master/make-lesson.zip))
