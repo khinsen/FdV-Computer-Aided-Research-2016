@@ -14,5 +14,5 @@ For viewing the slides, click on the links below:
  - [The lab notebook of the digital age](http://rawgithub.com/khinsen/FdV-Computer-Aided-Research-2016/master/the_lab_notebook_of_the_digital_age.html)
  - [Version Control with Git](http://rawgithub.com/khinsen/FdV-Computer-Aided-Research-2016/master/git_introduction.html)
  - [Using Git in collaboration](http://rawgithub.com/khinsen/FdV-Computer-Aided-Research-2016/master/git_for_collaborating.html)
-
-- [Introduction to 'make'](http://rawgithub.com/khinsen/FdV-Computer-Aided-Research-2016/master/make_introduction.html) (download the [example files](https://github.com/khinsen/FdV-Computer-Aided-Research-2016/raw/master/make-lesson.zip))
+ - [Reproducible workflows](http://rawgithub.com/khinsen/FdV-Computer-Aided-Research-2016/master/reproducible_workflows.html)
+ - [Introduction to 'make'](http://rawgithub.com/khinsen/FdV-Computer-Aided-Research-2016/master/make_introduction.html) (download the [example files](https://github.com/khinsen/FdV-Computer-Aided-Research-2016/raw/master/make-lesson.zip))
