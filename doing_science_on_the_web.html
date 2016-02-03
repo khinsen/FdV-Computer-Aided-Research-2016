@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Title</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <style type="text/css", media="screen">
+      @import url(http://fonts.googleapis.com/css?family=Droid+Serif);
+      @import url(http://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: 400;
+        margin-bottom: 0;
+        margin-top: 10px;
+      }
+      h1 { font-size: 2.8em; }
+      h2 { font-size: 2em; }
+      h3 { font-size: 1.6em; }
+      .inverse {
+        background: #272822;
+        color: #777872;
+        text-shadow: 0 0 20px #333;
+      }
+      .inverse h1, .inverse h2 {
+        color: #f3f3f3;
+        line-height: 0.8em;
+      }
+
+      pre {
+        border-left: 0.4em solid #d7d7d7;
+        padding: 1em !important;
+      }
+      code {
+        background: transparent !important;
+      }
+      .right {
+        float: right;
+        margin-left: 1em;
+      }
+      .pushdown {
+        margin-top: 12em;
+      }
+      .footnote {
+        position: absolute;
+        bottom: 3em;
+       }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle, inverse
+
+# Doing Science on the Web
+
+### [Konrad Hinsen](http://khinsen.net/)
+
+Centre de Biophysique Moléculaire, Orléans, France
+
+Synchrotron SOLEIL, Saint Aubin, France
+
+<br/>
+<br/>
+![Creative Commons License](https://i.creativecommons.org/l/by/3.0/88x31.png)  <br/>
+This work is licensed under a <br/>
+[Creative Commons Attribution License](https://github.com/swcarpentry/bc/blob/gh-pages/LICENSE.md).
+
+---
+
+# What the Web offers to scientists
+
+ - Support for collaboration
+
+ - Computation as a service
+
+ - Publication
+
+ - Cloud storage and computing
+
+ - Social networks
+
+ - Other services
+
+---
+
+# Web services are fragile
+
+ - Web services change or disappear rapidly.
+
+ - Their business models can be unclear, or contrary to your interests.
+
+ - Play with Web services as you like, but don't depend on them without
+   checking if they are trustworthy:
+
+   + Evaluate their business model and integrity.
+   + Do the people behind them look competent?
+   + Does the service have the means to stay around for a while?
+   + Can you get your data out to avoid becoming dependent?
+
+Sometimes Web services disappear because they are not economically
+interesting for their owners. Examples are [Google Code](http://code.google.com/)
+and [Google Reader](http://www.google.com/reader/about/),
+which were popular but did not generate advertising revenue for Google.
+
+Sometimes Web services disappear because of insufficient technical precautions. 
+See [this article](http://www.infoworld.com/article/2608076/data-center/murder-in-the-amazon-cloud.html)
+for the story of [Code Spaces](http://www.codespaces.com/).
+
+Many Web services prefer to hide their business model, because it is
+against the interests of their users. In particular, many free services
+sell the data you upload for advertising purposes.
+
+---
+
+# Collaboration
+
+ - [Open Science Framework](http://osf.io/), the [Open Notebook Science Network](http://onsnetwork.org/),
+   and [Synapse](https://www.synapse.org/) manage shared research data.
+
+ - [GitHub](http://github.com/) - you have used it yourself.
+   [Bitbucket](http://bitbucket.org/) provides similar services.
+
+ - Collaborative computation (e.g. [coLaboratory](http://colaboratory.jupyter.org/)).
+
+ - Collaborative editing/note taking: [Etherpad](https://public.etherpad-mozilla.org/),
+   [Google Docs](http://docs.google.com/)
+
+ - Mozilla Science's [Collaborate](http://www.mozillascience.org/collaborate)
+   network aims to create collaborations on scientific software.
+
+ - Problem-oriented sites such as [polymath](http://polymathprojects.org/)
+   invite anyone to contribute to the solution of scientific problems.
+
+ - Crowdfunding sites such as
+   [experiment.com](https://experiment.com/),
+   [Petridish](http://www.petridish.org/), or
+   [SciFlies](http://www.sciflies.org/) bring together
+   researchers and funders for small but innovative projects.
+
+ - Distributed computing projects [SETI@home](http://setiathome.berkeley.edu/), [Folding@home](http://folding.stanford.edu/) ask for volunteer contributions
+   of computing resources.
+
+ - [Citizen Science](http://en.wikipedia.org/wiki/Citizen_science) invites
+   the public to participate in research projects.
+
+---
+
+# Computation as a service
+
+ - Simple principle: you upload some data, enter some parameters, push
+   a button, and download the result.
+
+ - Often provided by research groups to encourage adoption of their
+   methods. Evaluate their claims critically.
+
+ - Sometimes provided by universities primarily for educational purposes.
+
+ - Sometimes provided by research institutions as a community service.
+
+### Watch out
+
+ - A computational service may disappear at any time.
+
+ - Or it may update its software and produce different results.
+
+ - Some services do not explain the methods they apply in detail, nor
+   provide version numbers for their software. You don't really know what
+   is being computed.
+
+ - Don't upload confidential data.
+
+
+---
+
+# Computation as a service
+
+### Randomly picked examples from my field of research
+
+ - [2Struc](http://2struc.cryst.bbk.ac.uk/): secondary structure
+   of proteins
+
+ - [LIPS](http://tanto.bioe.uic.edu/lips/): prediction of
+   helix-lipid interfaces
+
+ - [WEBnm@](http://apps.cbu.uib.no/webnma/home):
+   Normal Mode Analysis of proteins
+
+### Graphics and visualization
+
+ - [plotly](https://plot.ly/): plots and charts
+
+ - [Google Charts](https://developers.google.com/chart/): plots and charts
+
+ - See this [list](http://datavisualization.ch/tools/selected-tools/)
+   which also covers libraries for Web programmers
+
+---
+
+# Publication
+
+ - Preprint servers: [arXiv](http://arxiv.org/), [bioRχiv](http://biorxiv.org/).
+   [archive.it](http://rchive.it/) will tell you which journals accept
+   submissions already available as preprints.
+
+ - The [Journal Selector](http://www.edanzediting.com/journal_selector)
+   helps you find an appropriate journal for your paper.
+
+ - [Authorea](http://www.authorea.com/) and
+   [Overleaf](https://www.overleaf.com/): collaborative writing of
+   scientific publications.
+
+ - Citable publication of datasets, figures, software, ...:
+   [Zenodo](http://zenodo.org/), [figshare](http://figshare.com/)
+
+ - Publishing datasets of unlimited size:
+   [Academic Torrents](http://www.academictorrents.com/)
+
+ - Publication of executable code with datasets:
+   [Exec&Share](http://execandshare.org/)
+
+---
+
+# Web-only scientific journals
+
+There is a growing number of scientific journals that have no
+print edition. Many use an Open Access model. Example:
+the [PLOS](https://www.plos.org/) journals.
+
+A few journals introduce new reviewing models, in particular
+open reviewing:
+
+ - [F1000Research](http://f1000research.com/)
+
+ - [PeerJ](https://peerj.com/)
+
+ - [The Winnower](http://thewinnower.com/)
+
+ - [ReScience](http://rescience.github.io/) (lives entirely on GitHub)
+
+The [Self-Journal of Science](http://sjscience.org/) and
+[PubPub](http://pubpub.media.mit.edu/) go one step
+further and add curation - anyone can be a journal editor.
+
+
+---
+
+# Presentations
+
+### Web services
+
+ - [Slideshare](http://slideshare.com/) for sharing presentations
+
+ - [SlideWiki](http://slidewiki.org/): on-line editor for collaborative
+   editing of presentations.
+
+ - [Prezi](http://prezi.com/) on-line presentation editor (commercial)
+
+### Tools for Web-based presentations
+
+ - [remark.js](http://remarkjs.com/) - what I use for these slides
+
+ - [reveal.js](http://lab.hakim.se/reveal-js/#/) has its own
+   [on-line slide editor](https://slides.com/)
+
+ - [deck.js](http://imakewebthings.com/deck.js/) - particularly interesting
+   for use with [Browsercast](https://github.com/twitwi/deck.browsercast.js/)
+
+---
+
+# Digital Object Identifiers (DOIs)
+
+ - Permanent identifiers for digital publications.
+
+ - Used by all scientific journals for referring to articles.
+
+ - [Zenodo](http://zenodo.org/) and [figshare](http://figshare.com/)
+   assign a DOI to each published dataset.
+
+ - DOI lookup: http://dx.doi.org/
+
+### Why not simply use a URL (Uniform Resource Locator)?
+
+ - URLs identify a storage location, DOIs identify the data
+
+ - DOIs are permanent:
+   - DOIs are meant to be valid "forever".
+   - a DOI should always point to "the same" digital object
+
+In practice, the detailed meaning of permanence is quite variable. Some
+publishers allow updating a digital object under the same DOI, others
+assign a new DOI to each version.
+
+---
+
+# Cloud storage and computing
+
+ - Backup storage for data: [Dropbox](http://dropbox.com/),
+   [Google Drive](http://drive.google.com/), ...
+
+ - Scientific computing: [OSDC](https://www.opensciencedatacloud.org/),
+   [Red Cloud](https://www.cac.cornell.edu/redcloud/),
+   [Wakari](https://wakari.io/)
+
+ - Virtual machines and large-scale data storage:
+   - [Amazon Elastic Compute Cloud](http://aws.amazon.com/fr/ec2/)
+   - [Google Cloud Platform](http://cloud.google.com/)
+   - many, many more - this is big business by now
+
+---
+
+# Social networks
+
+On these sites, you can construct an on-line showcase containing
+your CV and publications, and subscribe to news from colleagues.
+
+ - [Academia.edu](http://www.academia.edu/)
+ - [Mendeley](https://www.mendeley.com/)
+ - [ResearchGate](http://www.researchgate.net/)
+ - [Zotero](https://www.zotero.org/)
+ - [Google Scholar](https://scholar.google.com/)
+
+A special case is
+
+ - [ORCID](http://orcid.org/)
+
+which assigns a unique ID to each researcher, hosts their publication
+list, and is increasingly used by journals to uniquely identify authors.
+
+---
+
+# Other services
+
+ - [Hypothes.is](http://hypothes.is/) is an annotation service for
+   Web sites and on-line articles.
+
+ - [ImpactStory](http://impactstory.org/): Altmetrics on
+   papers, blog entries, software, datasets, etc.
+
+ - [Publons](https://publons.com/),
+   [Peerage of Science](http://www.peerageofscience.org/):
+   reviews of scientific papers, before or after they are published
+
+ - [PubPeer](https://pubpeer.com/): Anonymous feedback on published articles
+
+ - [Academic Karma](http://academickarma.org/) Journal-independent peer review
+
+ - [SciCombinator](http://www.scicombinator.com/): shows
+   "most talked about" scientific papers
+
+ - [Sciencescape](http://sciencescape.org/),
+   [PubChase](http://www.pubchase.com/):
+   help find scientific publications in your field
+
+ - Search engines and databases:
+    + [Google Scholar](http://scholar.google.com/)
+    + [Web of Science](https://webofknowledge.com/) (commercial)
+    + [Scopus](http://www.scopus.com/) (commercial)
+
+---
+
+# The future of scientific research
+
+ > _Prediction is always uncertain, especially if it concerns the future._
+ > ([attributed to various famous people](http://quoteinvestigator.com/2013/10/20/no-predict/))
+
+Scientific research is changing faster than ever before. Computing
+and Web technologies play an important role in this change.
+
+ > _First we shape our tools, and then our tools shape us._
+ > ([mistakenly attributed to  Marshall McLuhan](https://mcluhangalaxy.wordpress.com/2013/04/01/we-shape-our-tools-and-thereafter-our-tools-shape-us/))
+
+Some starting points for exploring possible futures:
+
+ - [Reinventing Discovery](http://www.amazon.com/gp/product/0691148902/ref=as_li_tf_tl?tag=michaniels-20) by [Michael Nielsen](http://michaelnielsen.org/blog/michael-a-nielsen/), and his [TEDx talk](http://www.ted.com/talks/michael_nielsen_open_science_now) on Open Science show realistic scenarios for the evolution of science.
+
+ - A more technical [book](http://book.openingscience.org/) on Open Science
+   looks into many aspects in detail.
+
+ - A [collection of articles](http://www.scienceopen.com/collection/Science20)
+   on new developments in scientific publishing.
+
+    </textarea>
+    <!-- load remark from GitHub -->
+    <script src="https://gnab.github.io/remark/downloads/remark-latest.min.js" type="text/javascript"></script>
+    <!-- fall back to local copy in case of a network problem -->
+    <script>window.remark || document.write('<script src="file:///Users/hinsen/js/remark/remark-latest.min.js" type="text/javascript">\x3C/script>')</script>
+    <!-- create slideshow -->
+    <script type="text/javascript">
+      var slideshow = remark.create();
+    </script>
+  </body>
+</html>
