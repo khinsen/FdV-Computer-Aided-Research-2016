@@ -16,3 +16,4 @@ For viewing the slides, click on the links below:
  - [Using Git in collaboration](http://rawgithub.com/khinsen/FdV-Computer-Aided-Research-2016/master/git_for_collaborating.html)
  - [Reproducible workflows](http://rawgithub.com/khinsen/FdV-Computer-Aided-Research-2016/master/reproducible_workflows.html)
  - [Introduction to 'make'](http://rawgithub.com/khinsen/FdV-Computer-Aided-Research-2016/master/make_introduction.html) (download the [example files](https://github.com/khinsen/FdV-Computer-Aided-Research-2016/raw/master/make-lesson.zip))
+ - [Publishing computer-aided research](http://rawgithub.com/khinsen/FdV-Computer-Aided-Research-2016/master/publishing_computer_aided_research.html)
